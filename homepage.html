@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guess It</title>
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap">
+    <style>
+
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: url('gamingjbg.png') no-repeat center center fixed;
+    background-size: 100% 100%;
+    height: 100%;
+}
+
+        #title-container {
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            font-family: 'Press Start 2P', sans-serif; /* Use the pixelated font */
+            font-size: 36px;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px #000000;
+        }
+
+        #logo-container {
+            position: absolute;
+            top: 5%;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+        }
+
+        #logo {
+            width: 350px;
+            height: auto;
+        }
+
+        .button-container {
+            background-color: #88522e;
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            text-align: center;
+            cursor: pointer;
+            margin: 10px;
+            font-family: Arial, sans-serif;
+        }
+
+        .switch-container {
+            display: flex;
+            align-items: center;
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+        }
+
+        .switch-label {
+            margin-right: 10px;
+            color: white;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
+
+        input:checked + .slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+        }
+
+        #rules-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 1);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="title-container">GUESS IT</div>
+
+    <div class="button-container">
+        <button onclick="startGame()">Play Game</button>
+        <button onclick="showRules()">Rules</button>
+    </div>
+
+    <div class="switch-container">
+        <label class="switch-label">Sound:</label>
+        <label class="switch">
+            <input type="checkbox" onclick="toggleMusic()">
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <audio id="background-music" src="background.mp3" loop autoplay></audio>
+
+    <script>
+        function playBackgroundMusic() {
+            document.getElementById('background-music').play();
+        }
+
+        function pauseBackgroundMusic() {
+            document.getElementById('background-music').pause();
+        }
+
+        window.onload = playBackgroundMusic;
+
+        function toggleMusic() {
+            const music = document.getElementById('background-music');
+            const musicControl = document.querySelector('.switch input');
+
+            if (music.paused) {
+                playBackgroundMusic();
+            } else {
+                pauseBackgroundMusic();
+            }
+        }
+
+        function startGame() {
+            alert("Game is starting!");
+            window.location.href = 'index.html';
+        }
+
+        function showRules() {
+            const rulesPopup = `
+                <div id="rules-popup">
+                    <h2>Game Rules</h2>
+                    <p>Greetings, guesser. Are you prepared to set out on your amazing trip to become the greatest scorer in the game? Your objective is to answer questions containing cleverly hidden letters. Here are some rules before you begin. Get points for right answers, but watch out miscalculations cost you one of your three lives. Sort the letters below to create your responses. In need of assistance? A consonant or vowel can be found using clues, but take caution you can only use clues that have 25 points. Use your three lives and clues wisely to progress through the levels. Harder game modes can be unlocked by finishing levels.</p>
+                    <p>GoodLuck Guesser!!</p>
+                    <strong>Gameplay Essentials:</strong>
+                    <ul>
+                        <p>You start with three lives make each answer count!</p>
+                        <p>Accumulate 25 points or more to use a clue strategically.</p>
+                        <p>You have a total of three clues use them wisely!</p>
+                        <p>Complete levels to unlock more challenging game modes.</p>
+                    </ul>
+                    <button style="cursor: pointer; padding: 10px 20px; background-color: #88522e; color: white; border: none; border-radius: 4px;" onclick="closeRulesPopup()">Close</button>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', rulesPopup);
+        }
+
+        function closeRulesPopup() {
+            const rulesPopup = document.getElementById('rules-popup');
+            if (rulesPopup) {
+                rulesPopup.remove();
+            }
+        }
+    </script>
+</body>
+</html>

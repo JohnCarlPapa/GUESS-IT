@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GUESS IT</title>
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+
+        #title-container {
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            font-family: 'Press Start 2P', sans-serif; /* Use the pixelated font */
+            font-size: 36px;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px #000000;
+        }
+
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: url('gamingjbg.png') no-repeat center center fixed;
+      background-size: 100% 100%;
+      height: 100%;
+    }
+
+    .container {
+      max-width: 600px;
+    }
+
+    #heart-display {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 999;
+    }
+
+    .heart-image {
+      width: 30px;
+      height: auto;
+      margin-right: 5px;
+    }
+
+    #lives-display {
+      display: none;
+    }
+
+    #word-display {
+      font-size: 24px;
+      margin-top: 20px;
+    }
+
+    #question-display,
+    #level-display,
+    #lives-display,
+    #score-display {
+      font-size: 18px;
+      margin-top: 10px;
+    }
+
+    #alphabet-buttons {
+      margin-top: 20px;
+    }
+
+    button {
+      font-size: 18px;
+      margin: 5px;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    #vowel-hint-button,
+    #consonant-hint-button {
+      font-size: 18px;
+      margin-top: 20px;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    #hint-message {
+      color: red;
+      margin-top: 10px;
+    }
+
+    .correct {
+      background-color: green;
+    }
+
+    .incorrect {
+      background-color: red;
+    }
+
+    .switch {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      -webkit-transition: .4s;
+      transition: .4s;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      -webkit-transition: .4s;
+      transition: .4s;
+    }
+
+.button-container {
+            background-color: #88522e;
+            padding: 20px;	
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: absolute;
+            top: 89%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+
+    input:checked+.slider {
+      background-color: #2196F3;
+    }
+
+    input:focus+.slider {
+      box-shadow: 0 0 1px #2196F3;
+    }
+
+    input:checked+.slider:before {
+      -webkit-transform: translateX(26px);
+      -ms-transform: translateX(26px);
+      transform: translateX(26px);
+    }
+
+    /* Rounded sliders */
+    .slider.round {
+      border-radius: 34px;
+    }
+
+    .slider.round:before {
+      border-radius: 50%;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="heart-display">
+    <img class="heart-image" src="pixel1.png" alt="Heart">
+    <img class="heart-image" src="pixel2.png" alt="Heart">
+    <img class="heart-image" src="pixel3.png" alt="Heart">
+  </div>
+
+  <div id="title-container">GUESS IT</div>
+
+  <div id="question-display"></div>
+  <div id="word-display"></div>
+  <div id="level-display">Level: Easy</div>
+  <div id="lives-display">Lives: 3</div>
+  <div id="score-display">Score: 0</div>
+  
+<div class="button-container">
+<div id="alphabet-buttons"></div>
+</div>
+
+  <button id="vowel-hint-button" onclick="provideHint('vowel')">Vowel Hint</button>
+  <button id="consonant-hint-button" onclick="provideHint('consonant')">Consonant Hint</button>
+  <div id="hint-message"></div>
+
+  <label class="switch">
+    <input type="checkbox" id="music-control" onclick="toggleMusic()">
+    <span class="slider round"></span>
+  </label>
+
+  <audio id="background-music" loop>
+    <source src="background.mp3" type="audio/mp3">
+    Your browser does not support the audio element.
+  </audio>
+
+  <script>
+    const levels = [
+      {
+        "easy": [
+          { word: "apple", question: "Red fruit" },
+          { word: "banana", question: "Yellow fruit" },
+          { word: "cherry", question: "Small and red" },
+          { word: "date", question: "Sweet and wrinkled" },
+          { word: "grape", question: "Comes in bunches" },
+          { word: "kiwi", question: "Fuzzy brown skin" },
+          { word: "lemon", question: "Sour and yellow" },
+          { word: "melon", question: "Large and juicy" },
+          { word: "orange", question: "Citrus and round" },
+          { word: "peach", question: "Soft with a pit" }
+        ]
+      },
+      {
+        "difficult": [
+          { word: "python", question: "High-level programming language" },
+          { word: "javascript", question: "Client-side scripting language" },
+          { word: "mongodb", question: "NoSQL database program" },
+          { word: "json", question: "Data interchange format" },
+          { word: "java", question: "Object-oriented programming language" },
+          { word: "html", question: "Markup language for web documents" },
+          { word: "css", question: "Style sheet language for web documents" },
+          { word: "c", question: "Procedural programming language" },
+          { word: "csharp", question: "Strongly typed programming language" },
+          { word: "golang", question: "Compiled programming language" }
+        ]
+      },
+      {
+        "expert": [
+          { word: "algorithm", question: "Set of instructions to solve a problem" },
+          { word: "database", question: "Organized collection of data" },
+          { word: "network", question: "Interconnected group or system" },
+          { word: "encryption", question: "Conversion of data into a code" },
+          { word: "framework", question: "Pre-built structure for software development" },
+          { word: "repository", question: "Central location for storing and managing files" },
+          { word: "middleware", question: "Software layer that connects different applications" },
+          { word: "scalability", question: "Ability to handle growing amounts of work" },
+          { word: "cybersecurity", question: "Protection of computer systems from theft or damage" },
+          { word: "virtualization", question: "Creation of a virtual version of something" }
+        ]
+      }
+    ];
+
+    let currentLevelIndex = 0;
+    let currentWordIndex = 0;
+    let currentWord = "";
+    let currentQuestion = "";
+    let wrongGuesses = 0;
+    let remainingLives = 3;
+    let score = 0;
+
+    // Add these variables at the top of your script
+    let usedVowelHints = 0;
+    let usedConsonantHints = 0;
+    const maxHints = 3;
+
+    function startGame() {
+      currentWord = levels[currentLevelIndex][Object.keys(levels[currentLevelIndex])[0]][currentWordIndex].word;
+      currentQuestion = levels[currentLevelIndex][Object.keys(levels[currentLevelIndex])[0]][currentWordIndex].question;
+
+      displayWord();
+      displayQuestion();
+      displayAlphabetButtons();
+      updateLivesDisplay();
+      updateLevelDisplay();
+      updateScoreDisplay();
+    }
+
+    function displayWord() {
+      const wordDisplay = document.getElementById("word-display");
+      wordDisplay.textContent = "";
+      for (let letter of currentWord) {
+        if (letter === " ") {
+          wordDisplay.textContent += " ";
+        } else {
+          wordDisplay.textContent += "_ ";
+        }
+      }
+    }
+
+    function displayQuestion() {
+      const questionDisplay = document.getElementById("question-display");
+      questionDisplay.textContent = `Question: ${currentQuestion}`;
+    }
+
+    function displayAlphabetButtons() {
+      const alphabetButtons = document.getElementById("alphabet-buttons");
+      alphabetButtons.textContent = "";
+
+      for (let i = 65; i <= 90; i++) {
+        const letter = String.fromCharCode(i);
+        const button = document.createElement("button");
+        button.textContent = letter;
+        button.addEventListener("click", () => checkGuess(letter, button));
+        alphabetButtons.appendChild(button);
+      }
+    }
+
+    function resetHeartDisplay() {
+      const hearts = document.querySelectorAll('.heart-image');
+      for (let heart of hearts) {
+        heart.style.display = 'inline';
+      }
+    }
+
+    function updateHeartDisplay() {
+      const hearts = document.querySelectorAll('.heart-image');
+      if (remainingLives >= 0 && remainingLives < hearts.length) {
+        hearts[remainingLives].style.display = 'none';
+      }
+    }
+
+    function provideHint(hintType) {
+      const wordDisplay = document.getElementById("word-display");
+      const hintMessage = document.getElementById("hint-message");
+
+      if (score >= 25 && ((hintType === 'vowel' && usedVowelHints < maxHints) || (hintType === 'consonant' && usedConsonantHints < maxHints))) {
+        const hiddenLetters = [];
+
+        for (let i = 0; i < currentWord.length; i++) {
+          if (currentWord[i] !== " " && wordDisplay.textContent[i * 2] === "_") {
+            if ((hintType === 'vowel' && isVowel(currentWord[i])) ||
+              (hintType === 'consonant' && isConsonant(currentWord[i]))) {
+              hiddenLetters.push(currentWord[i]);
+            }
+          }
+        }
+
+        if (hiddenLetters.length > 0) {
+          const randomIndex = Math.floor(Math.random() * hiddenLetters.length);
+          const hintLetter = hiddenLetters[randomIndex];
+
+          for (let i = 0; i < currentWord.length; i++) {
+            if (currentWord[i].toLowerCase() === hintLetter.toLowerCase()) {
+              wordDisplay.textContent = wordDisplay.textContent.substring(0, i * 2) + `${currentWord[i]} ` + wordDisplay.textContent.substring((i + 1) * 2);
+              break;
+            }
+          }
+
+          score -= 25;
+          updateScoreDisplay();
+
+          hintMessage.textContent = "";
+
+          // Update used hint count
+          if (hintType === 'vowel') {
+            usedVowelHints++;
+          } else if (hintType === 'consonant') {
+            usedConsonantHints++;
+          }
+        }
+      } else {
+        hintMessage.textContent = "You don't have enough score or you've reached the maximum hint limit.";
+      }
+    }
+
+    function isVowel(letter) {
+      return ['a', 'e', 'i', 'o', 'u'].includes(letter.toLowerCase());
+    }
+
+    function isConsonant(letter) {
+      return /^[b-df-hj-np-tv-z]$/i.test(letter);
+    }
+
+    function checkGuess(letter, button) {
+      const wordDisplay = document.getElementById("word-display");
+      let updatedDisplay = "";
+
+      if (currentWord.includes(letter.toLowerCase()) || currentWord.includes(letter.toUpperCase())) {
+        for (let i = 0; i < currentWord.length; i++) {
+          if (currentWord[i].toLowerCase() === letter.toLowerCase()) {
+            updatedDisplay += `${currentWord[i]} `;
+          } else {
+            updatedDisplay += wordDisplay.textContent[i * 2] === "_" ? "_ " : `${currentWord[i]} `;
+          }
+        }
+
+        wordDisplay.textContent = updatedDisplay;
+
+        if (!updatedDisplay.includes("_")) {
+          score += 10;
+          button.classList.add("correct");
+          alert(`Correct! Score: ${score}`);
+          nextWord();
+        }
+      } else {
+        button.classList.add("incorrect");
+        wrongGuesses++;
+        remainingLives--;
+
+        updateLivesDisplay();
+        updateHeartDisplay();
+
+        if (remainingLives === 0) {
+          alert("Game over! You've run out of lives.");
+          resetGame();
+        }
+      }
+
+      button.disabled = true;
+    }
+
+    function nextWord() {
+      const hintMessage = document.getElementById("hint-message");
+      hintMessage.textContent = "";
+
+      currentWordIndex++;
+      if (currentWordIndex < levels[currentLevelIndex][Object.keys(levels[currentLevelIndex])[0]].length) {
+        currentWord = levels[currentLevelIndex][Object.keys(levels[currentLevelIndex])[0]][currentWordIndex].word;
+        currentQuestion = levels[currentLevelIndex][Object.keys(levels[currentLevelIndex])[0]][currentWordIndex].question;
+        displayWord();
+        displayQuestion();
+        displayAlphabetButtons();
+      } else {
+        alert(`Congratulations! You've completed the ${Object.keys(levels[currentLevelIndex])[0]} level. Moving on to the next level.`);
+        currentLevelIndex++;
+        currentWordIndex = 0;
+        if (currentLevelIndex < levels.length) {
+          startGame();
+        } else {
+          alert("Congratulations! You've completed all levels.");
+          resetGame();
+        }
+      }
+
+      updateScoreDisplay();
+    }
+
+    function resetGame() {
+      resetHeartDisplay();
+      currentLevelIndex = 0;
+      currentWordIndex = 0;
+      currentWord = "";
+      currentQuestion = "";
+      wrongGuesses = 0;
+      remainingLives = 3;
+      score = 0;
+      usedVowelHints = 0; // Reset used hint count
+      usedConsonantHints = 0;
+      startGame();
+    }
+
+    function updateLivesDisplay() {
+      const livesDisplay = document.getElementById("lives-display");
+      livesDisplay.textContent = `Lives: ${remainingLives}`;
+    }
+
+    function updateLevelDisplay() {
+      const levelDisplay = document.getElementById("level-display");
+      const difficulty = Object.keys(levels[currentLevelIndex])[0];
+      levelDisplay.textContent = `Level: ${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}`;
+    }
+
+    function updateScoreDisplay() {
+      const scoreDisplay = document.getElementById("score-display");
+      scoreDisplay.textContent = `Score: ${score}`;
+    }
+
+    let musicPlaying = false;
+    const backgroundMusic = document.getElementById("background-music");
+    const musicButton = document.getElementById("music-button");
+
+    function toggleMusic() {
+      const music = document.getElementById('background-music');
+      const musicControl = document.getElementById('music-control');
+
+      if (musicControl.checked) {
+        playBackgroundMusic();
+      } else {
+        pauseBackgroundMusic();
+      }
+    }
+
+    function playBackgroundMusic() {
+      document.getElementById('background-music').play();
+    }
+
+    function pauseBackgroundMusic() {
+      document.getElementById('background-music').pause();
+    }
+
+    window.onload = playBackgroundMusic;
+
+    startGame();
+  </script>
+</body>
+
+</html>
